@@ -43,8 +43,15 @@ def main() -> int:
     destination = out_dir / OUTPUT_NAME
     destination.write_bytes(picture_bytes)
 
+    # Read it back and make sure what landed on disk is exactly what
+    # the repository holds; a short or altered file is worse than none.
+    if destination.read_bytes() != picture_bytes:
+        print(f"written picture differs from bundled one: {destination}",
+              file=sys.stderr)
+        return 1
+
     print(f"delivered {destination} "
-          f"({destination.stat().st_size} bytes)")
+          f"({destination.stat().st_size} bytes, verified)")
     return 0
 
 
